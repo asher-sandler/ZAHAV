@@ -1,0 +1,1 @@
+.\gen-render.ps1 -class "index" -moduleFileName "..\gen\SHIDUCH\render\region-index.ps1" -Object "GRID" -Dictionary "SHIDUCH"

@@ -1,0 +1,82 @@
+﻿<h1 class="text-center text-capitalize">Добавление</h1>
+<div class="col-m-1 ">
+    <ul class="nav nav-tabs nav-justified " id="myTab" role="tablist" >
+			<li class="nav-item nav-link tabbed-2 " >
+				<a href="#tab-id-1" data-toggle="tab"><H1 class="text-center text-info">Город</H1></a>
+			</li>
+	</ul>
+   <form class="needs-validation " novalidate action="/<?=Config::get("site_root")?>city" method="post">
+		<input type="hidden"  id="hidden-form-id-CITY001" name="hidden-form-id-CITY001" value="-1"/>
+		<div class="tab-content ">
+		   <div class="tab-pane form-yaffe tab-form-2 active" id="tab-id-1" >
+                
+                <div class="form-row ">
+					<div class="col-md-6 mb-3">
+						  <label for="Name-CITY001">
+									Город
+						  </label>
+						  <input type="text" class="form-control"  id="Name-CITY001" name="Name-CITY001" placeholder="город"  required  >
+			              <div class="invalid-feedback">
+                               Заполните поле: "Город".
+                          </div>
+						  <div class="valid-feedback">
+                               Ok
+                          </div>
+					</div>
+					<div class="col-md-6 mb-3">
+						  <label for="Name-COUNTRY001">
+									Страна
+						  </label>
+						  <select class="form-control"  id="Name-COUNTRY001" name="Name-COUNTRY001" placeholder="Страна" >
+						  <?php
+						    foreach($data['country'] as $countryrow){
+									echo('<option value="'.$countryrow["id"].'">'.$countryrow["Name"]."</option>");
+								}	
+							?>
+						  </select>
+						  
+						  
+						  
+			              <div class="invalid-feedback">
+                               Заполните поле: "Страна".
+                          </div>
+						  <div class="valid-feedback">
+                               Ok
+                          </div>
+					</div>
+				</div>	
+            </div>
+            <button class="btn btn-primary" type="submit">Записать информацию</button>
+		</div>
+    </form>
+</div>
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    $(function () {
+        $('.tab-pane input, .tab-pane textarea').on('invalid',
+            function () {
+                var $closest = $(this).closest('.tab-pane');
+                //var $closest=$(this).last('.tab-pane');
+                var id = $closest.attr('id');
+                $('.nav a[href="#' + id + '"]').tab('show');
+            });
+    });
+</script>
+

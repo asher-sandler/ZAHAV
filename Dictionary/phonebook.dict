@@ -1,0 +1,15 @@
+t:citta:Город:CT001
+f:Name:$:Город
+
+end:
+
+t:phonebook:Телефоны:TB001
+
+f:fam:$:Фамилия:key 
+f:Name:$:Имя  
+f:Morda:Image:Морда
+f:Phone:$:Номер
+fk:citta
+
+end:
+

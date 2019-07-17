@@ -1,0 +1,178 @@
+﻿@ this is a comments
+@ controller.TMPL for generatin powershell script
+@ that will be generate php for controller
+<<function render-module($dpPasspTable)>>
+<<{>>
+	<<$crlf = [char][int]13+[char][int]10>>
+<?php
+//
+// Generated <<%%$($(get-date).getdatetimeformats()[21])%%>>
+// Template name "controller.TMPL"
+// 
+class <<%%(Get-Culture).TextInfo.ToTitleCase($dpPasspTable.TableName)%%>>Controller extends Controller
+{
+    public function __construct($data=array())
+    {
+       parent::__construct();
+       $this->model = new <<%%(Get-Culture).TextInfo.ToTitleCase($dpPasspTable.TableName)%%>>();
+    }
+
+    public function index(){
+
+		
+		$this->data['<<%%$dpPasspTable.TableName.ToLower()%%>>'] = $this->model->getList();
+		
+		<<foreach($f in $dpPasspTable.Fields){>>
+			<<if ($f.isConstraint){>>
+
+
+@		$this->data['<<%%$f.Constraint.ParentTable.ToLower()%%>>'] = $this->model->get<<%%(Get-Culture).TextInfo.ToTitleCase($f.Constraint.ParentTable)%%>>List();
+		$this->data['<<%%$f.Constraint.ParentTable.ToLower()%%>>'] = $this->model->get<<%%(Get-Culture).TextInfo.ToTitleCase($f.Constraint.ViewField)%%>>List();
+
+			<<}>>
+		<<}>>	
+		
+	}
+	
+	public function update()
+	{
+		$tableName = '<<%%$dpPasspTable.TableName%%>>';
+		<<$hiddenFormID=get-hidden-formID($dpPasspTable)>>
+		if (isset($_POST["<<%%$hiddenFormID%%>>"])) {
+
+			$id = $_POST["<<%%$hiddenFormID%%>>"];
+			if ($this->model->validateConstraint($_POST)){
+				$prepArr = $this->model->getPrepArr($_POST);
+				
+				//if (isset($_POST["<<%%$dpPasspTable.FormFields[0].Name%%>>-<<%%$dpPasspTable.FormName%%>>"])) {
+
+					if ($id == -1) {
+						$sql =  $this->model->getAddSQL($tableName,$prepArr);
+						//echo('<pre>');var_dump($sql);die;
+						$this->model->execSQL($sql);
+						$id = $this->model->lastID();
+					}else{
+						$sql =  $this->model->getUpdateSQL($tableName,$prepArr,$id);
+						//echo('<pre>');var_dump($sql);die;
+						$this->model->execSQL($sql);
+					}
+					<<foreach($f in $dpPasspTable.Fields){>>
+						<<if (!$f.isConstraint){>>
+							<<if ($f.Type.ToUpper() -eq "IMAGE"){>>
+					if (isset($_FILES['<<%%$f.Name%%>>-<<%%$dpPasspTable.FormName%%>>'])){
+		
+						$this->model->saveImage($id,$_FILES["<<%%$f.Name%%>>-<<%%$dpPasspTable.FormName%%>>"],"<<%%$f.Name%%>>");
+					}
+							<<}>>
+						<<}>>
+
+					<<}>>
+				//}
+			}
+			else
+			{
+               Session::setFlash('Не все справочники заполнены! Данные не сохранены.');
+				
+			}			
+		}	
+		$this->data['<<%%$dpPasspTable.TableName.ToLower()%%>>'] = $this->model->getById($id);
+	
+	}
+	
+    public function edit()
+	{
+		<<$hiddenFormID=get-hidden-formID($dpPasspTable)>>
+
+		if (isset($_POST["<<%%$hiddenFormID%%>>"])) {
+			$id = $_POST["<<%%$hiddenFormID%%>>"];
+@			echo("<pre>ID=<br>");var_dump($id);die;
+			$this->data['<<%%$dpPasspTable.TableName.ToLower()%%>>'] = $this->model->getById($id);
+
+		<<foreach($f in $dpPasspTable.Fields){>>
+			<<if ($f.isConstraint){>>
+
+
+			$this->data['<<%%$f.Constraint.ParentTable.ToLower()%%>>'] = $this->model->get<<%%(Get-Culture).TextInfo.ToTitleCase($f.Constraint.ViewField)%%>>List();
+
+			<<}>>
+		<<}>>			
+		}
+	
+	}
+    public function datasaved()
+    {
+        $parameters = $this->getParams();
+        if (!is_null($parameters)) {
+            if (count($parameters) >= 1) {
+                $id = $parameters[0];
+                $this->data['<<%%$dpPasspTable.TableName.ToLower()%%>>'] = $this->model->getById($id);
+               Session::setFlash('Информация успешно сохранена!');
+            }
+        }
+    }
+    public function delete()
+	{
+    if ($_POST) {
+        if (isset($_POST["hidden-form-id-<<%%$dpPasspTable.FormName%%>>"]))
+        {
+            $id=$_POST["hidden-form-id-<<%%$dpPasspTable.FormName%%>>"];
+            $this->model->deleteById($id);
+            Session::setFlash('Удалено!');
+        }
+    }
+
+	}
+    public function confirmdel()
+    {
+        if ($_POST) {
+            if (isset($_POST["hidden-form-id-<<%%$dpPasspTable.FormName%%>>"]))
+            {
+         	    $id=$_POST["hidden-form-id-<<%%$dpPasspTable.FormName%%>>"];
+                $this->data['<<%%$dpPasspTable.TableName.ToLower()%%>>'] = $this->model->getById($id);
+                Session::setFlash('Уверены, что хотите удалить?');
+            }
+        }
+    }
+	
+	public function add()
+	{
+		<<foreach($f in $dpPasspTable.Fields){>>
+			<<if ($f.isConstraint){>>
+
+
+			$this->data['<<%%$f.Constraint.ParentTable.ToLower()%%>>'] = $this->model->get<<%%(Get-Culture).TextInfo.ToTitleCase($f.Constraint.ViewField)%%>>List();
+
+			<<}>>
+		<<}>>	
+		
+	}
+	
+	public function show()
+	{
+		
+		$parameters = $this->getParams();
+        if (!is_null($parameters)) {
+            if (count($parameters) >= 1) {
+                $id = $parameters[0];
+				$result = $this->model->getById($id);
+				
+				if (!$result)
+				{
+					
+					Session::setFlash('Запрашиваемая информация не найдена.');	
+				}
+				$this->data['<<%%$dpPasspTable.TableName.ToLower()%%>>']=$result;
+@				//echo("<pre>");
+@				//var_dump($this->data['<<%%$dpPasspTable.TableName.ToLower()%%>>'] );die;
+				
+			}
+		}	
+	}
+	
+	
+	
+}
+	<<return $script>>
+
+<<}>>
+

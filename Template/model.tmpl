@@ -1,0 +1,316 @@
+﻿@ this is a comments
+@ model.TMPL for generatin powershell script
+@ that will be generate php for model
+<<function render-module($dpPasspTable)>>
+<<{>>
+	<<$crlf = [char][int]13+[char][int]10>>
+	<<$shtrudel = [char][int]64>>
+	<<$dbfields = New-Object System.Collections.ArrayList>>
+	<<foreach($f in $dpPasspTable.Fields){>>
+		<<$validfield = $true>>
+		<<if (!$f.isConstraint){>>
+			<<if ($f.Type.ToUpper() -eq "IMAGE"){>>
+				<<$validfield = $false>>
+			<<}>>
+		<<}else{>>
+			<<$validfield = $false>>
+		<<}>>
+		<<if ($validfield){>>
+		    <<$dbfields.Add($f.Name+'-'+$dpPasspTable.FormName) | out-null>>
+		<<}>>
+	<<}>>
+<?php
+//
+// Generated <<%%$($(get-date).getdatetimeformats()[21])%%>>
+// Template name "model.TMPL"
+//
+class <<%%(Get-Culture).TextInfo.ToTitleCase($dpPasspTable.TableName)%%>> extends model
+{
+    public function getList($value = null)
+    {
+       $sql = "select <<%%$dpPasspTable.ViewSelect%%>> from <<%%$dpPasspTable.ViewName%%>>";
+       return $this->db->query($sql);
+    }
+@	/*
+@    public function update($data, $id = null)
+@    {
+@		if
+@		(
+@		
+@			
+@
+@			<<$nfields = 1>>
+@			<<foreach($f in $dbfields){>>
+@@				<<if (!$f.isConstraint){>>
+@@				<<$formName = $dpPasspTable.FormName>>
+@			!isset($data['<<%%$f%%>>']) ||
+@@				<<if ($nfields -lt $dpPasspTable.Fields.count)>>
+@@					<<{>>
+@@						<<$script +="||">>
+@@					<<}>>
+@@					<<$nfields++>>
+@@				<<}>>
+@			<<}>>
+@@ delete 4 last symbol in string || and $crlf			
+@			<<$script = $script.Substring(0,$script.Length-4)>>
+@        )
+@		{
+@            return false;
+@		}
+@
+@        $id =(int)$id;
+@		<<foreach($f in $dpPasspTable.Fields){>>
+@		<<$formName = $dpPasspTable.FormName>>
+@		<<$dataFName = $f.Name>>
+@		<<$strud = "">>
+@		<<if ($f.isConstraint){>>
+@@			<<$dataFName= $f.Constraint.ViewField>>
+@			<<$strud = $shtrudel>>
+@			<<$dataFName= $f.Name>>
+@		<<}else{>>
+@			<<if ($f.Type.ToUpper() -eq "IMAGE"){>>
+@				<<continue>>
+@			<<}>>
+@		<<}>>
+@ 	    <<%%$strud%%>>$<<%%$f.Name.ToLower()%%>> = $this->db->escape($data['<<%%$dataFName%%>>-<<%%$formName%%>>']);
+@		<<}>>
+@        // Update
+@		$sql = "UPDATE <<%%$dpPasspTable.TableName%%>> SET
+@		
+@		
+@		<<$nfields = 1>>
+@		<<foreach($f in $dpPasspTable.Fields){>>
+@			<<if (!$f.isConstraint){>>
+@				<<if ($f.Type.ToUpper() -eq "IMAGE"){>>
+@					<<continue>>
+@				<<}>>
+@			<<}>>
+@                    <<%%$f.Name%%>>='{$<<%%$f.Name.ToLower()%%>>}'
+@@					<<if ($nfields -lt $dpPasspTable.Fields.count)>>
+@@					<<{>>
+@						<<$script +=",">>
+@@					<<}>>
+@@					<<$nfields++>>
+@		<<}>>
+@@ delete 1 last symbol in string , and $crlf			
+@			<<$script = $script.Substring(0,$script.Length-1)>>
+@		
+@       		        where id = '{$id}';";
+@
+@        return $this->db->query($sql);
+@
+@    }
+@	*/
+    public function getById($value=null)
+    {
+        $sql = "select <<%%$dpPasspTable.ViewSelect%%>> from <<%%$dpPasspTable.ViewName%%>> ";
+        if (isset($value)) {
+           if (is_numeric($value)) {
+                $sql .= "WHERE id = '" . $value . "' ";
+            }
+        }
+        $sql.= "  limit 1;";
+        return $this->db->query($sql);
+    }
+	public function validateConstraint($data)
+	{
+		// check constraint fields
+		return true;
+	}
+	<<if (isTypeImageInPTable($dpPasspTable)){>>
+	public function saveImage($id,$file,$fieldname)
+	{
+@		echo("<pre>");var_dump($file);var_dump($fieldname);die;
+		$sname = $file['tmp_name'];
+		$fname = $file['name'];
+
+		$saved = false;	
+		if (!empty($sname)) {
+			$allowTypes = array('jpg','png','jpeg','gif','pdf');
+			$fileName = basename($fname);
+@			$targetFilePath = $targetDir.$fileName;
+@			$targetFilePath = $fileName;
+@			$filetype = pathinfo($targetFilePath,PATHINFO_EXTENSION);
+			$filetype = pathinfo($fileName,PATHINFO_EXTENSION);
+			if (in_array(strtolower($filetype), $allowTypes))
+			{
+
+			//
+				$imgData = base64_encode(file_get_contents($sname));
+				$src = 'data: '.mime_content_type($sname).';base64,'.$imgData;
+				$imgstyle= "background-image: url('".$src."'); background-size: cover; background-position: 50% 50%;";
+				//	
+@				$relpath = 'uploads'.DS.'<<%%$dpPasspTable.TableName.ToLower()%%>>'.DS.(string)$id.DS;
+@				$targetDir = WEBROOT.DS.$relpath;
+@				//
+@				list($width, $height, $type, $attr) = getimagesize($sname);
+
+				//
+@				$relpath = $relpath.$fileName;
+					
+
+
+@				<<%%$shtrudel%%>>mkdir($targetDir,0777,true);
+@				if (move_uploaded_file($sname,$targetFilePath))
+@				{
+				$saved=true;
+					
+@					// replace '\' to '/'
+					
+@					$imagePath = $this->db->escape($relpath);
+				
+				$sql = "UPDATE <<%%$dpPasspTable.TableName%%>> SET "
+@					.$fieldname."='{$imagePath}', __img1 =";
+					.$fieldname."=";
+					
+				$sql.= '"'. $imgstyle .'"'; 
+				$sql.= " where id = '{$id}';";
+				return $this->db->query($sql);
+@				}
+			}
+		}
+		return $saved;		
+				
+	}
+	<<}>>
+@    /*	
+@    public function add($data)
+@    {
+@        if
+@		(
+@
+@			<<foreach($f in $dbfields){>>
+@			!isset($data['<<%%$f%%>>']) ||
+@
+@			<<}>>
+@@ delete 4 last symbol in string || and $crlf			
+@			<<$script = $script.Substring(0,$script.Length-4)>>
+@
+@        )
+@		{
+@            return false;
+@		}
+@
+@		<<foreach($f in $dpPasspTable.Fields){>>
+@		<<$formName = $dpPasspTable.FormName>>
+@		<<$dataFName = $f.Name>>
+@		<<$strud = "">>
+@		<<if ($f.isConstraint){>>
+@@			<<$dataFName= $f.Constraint.ViewField>>
+@			<<$strud = $shtrudel>>
+@			<<$dataFName= $f.Name>>
+@		<<}else{>>
+@			<<if ($f.Type.ToUpper() -eq "IMAGE"){>>
+@				<<continue>>
+@			<<}>>
+@		<<}>>
+@ 	    <<%%$strud%%>>$<<%%$f.Name.ToLower()%%>> = $this->db->escape($data['<<%%$dataFName%%>>-<<%%$formName%%>>']);
+@		<<}>>
+@		// Insert
+@        $sql = "INSERT INTO <<%%$dpPasspTable.TableName%%>> SET
+@
+@		
+@		<<foreach($f in $dpPasspTable.Fields){>>
+@			<<if (!$f.isConstraint){>>
+@				<<if ($f.Type.ToUpper() -eq "IMAGE"){>>
+@					<<continue>>
+@				<<}>>
+@			<<}>>
+@                    <<%%$f.Name%%>>='{$<<%%$f.Name.ToLower()%%>>}'
+@						<<$script +=",">>
+@		<<}>>
+@@ delete 1 last symbol in string , and $crlf			
+@			<<$script = $script.Substring(0,$script.Length-1)>>
+@	
+@;";
+@
+@        return $this->db->query($sql);
+@
+@    }
+@	*/
+    public function lastID()
+    {
+        $sql="SELECT LAST_INSERT_ID();";
+        return $this->db->query($sql)[0]["LAST_INSERT_ID()"];
+    }
+    public function deleteById($value=null)
+    {
+        if (isset($value))
+        {
+            $sql = "DELETE FROM <<%%$dpPasspTable.TableName%%>> WHERE id = '" . $value . "'";
+            return $this->db->query($sql);
+        }
+    }
+		<<foreach($f in $dpPasspTable.Fields){>>
+			<<if ($f.isConstraint){>>
+@	public function get<<%%(Get-Culture).TextInfo.ToTitleCase($f.Constraint.ParentTable)%%>>List($value = null)
+	public function get<<%%(Get-Culture).TextInfo.ToTitleCase($f.Constraint.ViewField)%%>>List($value = null)
+	{
+		$sql = "select * from <<%%$f.Constraint.ParentTable%%>>";
+		return $this->db->query($sql);
+	}
+			<<}>>
+		<<}>>		
+
+
+	public function getPrepArr($data)
+	{
+	
+		$values = array();
+	<<foreach($f in $dpPasspTable.Fields){>>
+		if (isset($data['<<%%$f.Name%%>>-<<%%$dpPasspTable.FormName%%>>'])){
+			$values += ['<<%%$f.Name%%>>' => $this->db->escape($data['<<%%$f.Name%%>>-<<%%$dpPasspTable.FormName%%>>'])];	
+		}
+	<<}>>
+		return $values;
+	}
+	
+	public function execSQL($sql)
+	{
+		return $this->db->query($sql);		
+	}
+	
+	public function getUpdateSQL($tableName,$values,$id){
+		
+		//$ins = implode(',', $ins);
+		//$fields = implode(',', array_keys($values));
+		$sql = "UPDATE ".$tableName." SET ";
+		$i = 1;
+		foreach ($values as $field => $value ){
+			 
+			$sql.="`".$field."` = ";
+			
+			$sql.="'".$value."'";
+			
+			if( $i < count($values))
+			{
+				$sql.=",";
+			}
+			$i++; 
+		}
+		
+		$sql .= " where `id` = ".$id;
+	    return $sql;
+	}
+	
+	public function getAddSQL($tableName,$values)
+	{
+		$sql = "INSERT INTO ".$tableName." SET ";
+		$i = 1;
+		foreach ($values as $field => $value ){
+			$sql.="`".$field."` = ";
+			$sql.="'".$value."'";
+			if( $i < count($values))
+			{
+				$sql.=",";
+			}
+			$i++; 
+		}		
+		return $sql;
+	}
+
+}
+
+	<<return $script>>
+
+<<}>>

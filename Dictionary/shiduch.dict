@@ -1,0 +1,247 @@
+
+;t:country:Страна:CNT001
+;f:Name:$:Страна:key
+
+;end:
+
+
+
+;t:region:Регион:R0001
+;f:Name:$:Регион:key
+;f:Karta:Image:Карта
+;end:
+
+
+t:gender:Пол:GND0001
+f:Name:$:Пол:key
+end:
+
+t:education:Образование:EDU0001
+f:Name:$:Образование:key
+end:
+
+
+
+t:wasspouce:Был в браке:SPC001
+f:Name:$:Был в браке:key
+end:
+
+;t:city:Город:CITY001
+;f:Name:$:Город:key
+;fk:country
+;fk:region
+;end:
+
+
+
+
+
+
+;t:shadkhan:Шадханы:S001
+
+;f:Name:$:Данные:key 
+;f:AboutMe:$:Обо мне:key  
+;f:Conditions:$:С кем я работаю  
+;f:Finance:$:Расценки  
+;f:EMail:$:E-Mail
+;f:Phone:$:Phone
+;f:Skype:$:Skype
+
+
+
+;end:
+
+;t:whorecomend:Рав:RAV001
+;f:Name:$:Рав:key
+;fk:city
+;f:Address:$:Адрес
+;f:EMail:$:E-Mail
+;f:Phone:$:Phone
+;f:Skype:$:Skype
+;fk:ququq
+;end:
+
+
+t:keila:Община:K0001
+f:Name:$:Наименование:key
+f:city:$:Город
+f:whorecomend:$:Кто рекомендовал (Рав)
+end:
+
+
+t:isfrozen:Анкета закрыта:ISCL001
+f:Name:$:Анкета закрыта:key
+end:
+
+
+t:health:Уровень здоровья:HEALTH001
+f:Name:$:Уровень:key
+end:
+
+
+t:iskoen:Коэн:ISKOEN001
+f:Name:$:Коэн:key
+end:
+
+
+
+;t:candidategoodhabits:Хорошие привычки:GOODHAB001
+;f:Name:$:Хорошие привычки:key
+;end:
+
+;t:candidatesocialstatus:Социальный статус:SOSST001
+;f:Name:$:Социальный статус:key
+;end:
+
+t:beaty:Внешние данные:BEAT001
+f:Name:$:Внешние данные:key
+end:
+
+t:defaultPhoto:Фото по умолчанию:DEFPH001
+f:Name:$:Номер фото по умолчанию:key
+end:
+
+
+t:business:Род занятий:BUSI001
+f:Name:$:Род занятий:key
+end:
+
+
+t:family:сведения о семье:FAM001
+f:Name:$:Семья:key
+end:
+
+
+
+t:jewery:Еврейство:JEW001
+f:Name:$:Еврейство:key
+end:
+
+;t:wantkashrut:Хотите соблюдать кашрут:WANTKASH001
+;f:Name:$:Хотите соблюдать кашрут:key
+;end:
+
+;t:wantmitzvot:Хотите соблюдать мицвот:WANTMIZV001
+;f:Name:$:Хотите соблюдать мицвот:key
+;end:
+
+;t:wantshabos:Хотите соблюдать шаббат:WANTSHBT001
+;f:Name:$:Хотите соблюдать шаббат:key
+;end:
+
+t:eida:Какой традиции придерживаетесь:EIDA001
+f:Name:$:Какой традиции придерживаетесь:key
+end:
+
+t:iskashrut:Соблюдение кашрута:KSHRT001
+f:Name:$:Соблюдение кашрута:key
+end:
+
+t:ismitzvot:Соблюдение мицвот:MTZVT001
+f:Name:$:Соблюдение мицвот:key
+end:
+
+t:isshabos:Соблюдение шаббата:SHBT001
+f:Name:$:Соблюдение шаббата:key
+end:
+
+
+t:account:Анкета:A001
+; U001 - имя формы
+; f - поле
+
+f:login:$:Аккаунт 
+f:password:$:Пароль
+f:status:$:Approved
+f:token:$:Token
+f:BalanceType:$:Тип баланса
+f:Balance:$:Баланс
+
+f:DateRegist:$:Дата регистрации
+f:DateLogin:$:Дата последнего входа
+;Аккаунт временно отключен/закрыт/заморожен или просто удален пользователем
+fk:isfrozen
+
+
+
+f:Surname:$:Фамилия:key
+f:Name:$:Имя
+f:MiddleName:$:Отчество
+
+
+f:Photo1:Image:Фото
+f:Photo2:Image:Фото
+f:Photo3:Image:Фото
+fk:defaultPhoto
+f:MySocial:$:ссылка на соцсеть
+
+f:city:$:Город
+f:country:$:Страна
+f:area:$:Район проживания
+;$:Род занятий
+fk:business
+; сведения о семье
+fk:family
+
+fk:gender
+f:Birthday:$:Год рождения:KEY
+fk:wasspouce
+
+f:Children:$:Количество детей
+f:AboutMe:$:Опишите себя
+f:AboutZug:$:Опишите кандидата
+
+f:languages:$:Знание языков
+; Образование
+fk:education
+
+
+f:Phone:$:Номер телефона:KEY
+
+f:EMail:$:E-Mail
+f:Skype:$:Skype
+
+;Внешние данные
+fk:beaty
+;:$:Внешние данные
+
+
+
+
+; Какой рав рекомендует
+f:whorecomend:$:Какой рав рекомендует
+
+;Еврейство
+fk:jewery
+f:Height:$:Рост
+f:Weight:$:Вес
+
+;Уровень  здоровья
+fk:health
+
+
+;Коэн
+fk:iskoen
+
+;Из какой общины
+fk:keila
+
+;Соблюдение традиций
+fk:isshabos
+;:$:Соблюдение шаббата
+
+;Соблюдение мицвот
+fk:ismitzvot
+;:$:Соблюдение мицвот
+
+;Соблюдение кашрута
+fk:iskashrut
+;:$:Соблюдение кашрута
+
+;Какой традиции придерживаетесь
+fk:eida
+;:$:Какой традиции придерживаетесь
+
+
+
+end:

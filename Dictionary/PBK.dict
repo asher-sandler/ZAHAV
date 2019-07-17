@@ -1,0 +1,37 @@
+t:phonebook:Телефонный справочник:T001
+
+f:FAMILY:$:Фамилия:key 
+f:PHONE:$:Номер телефона:key  
+f:ADDRESS:$:Улица  
+f:HOUSE:$5:Номер дома  
+f:FLAT:$5:Квартира  
+end:
+
+
+
+t:person:Сотрудники:U001
+; U001 - имя формы
+; f - поле
+f:Surname:$:Фамилия:key
+f:Name:$:Имя
+f:MiddleName:$:Отчество
+f:securityID:$:идентификатор безопасности
+f:phone:$:Номер телефона:KEY
+end:
+
+t:employer:Работодатель:R001
+
+
+f:Surname:$:Фамилия:key
+f:Name:$:Имя
+f:MiddleName:$:Отчество
+f:CompanyAddress:$:Адрес компании:key
+f:City:$:Город
+end:
+
+
+
+t:formtest:Формирование:F123
+
+f:Description:$:Наименование:key
+end:

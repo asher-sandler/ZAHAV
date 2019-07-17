@@ -1,0 +1,263 @@
+
+
+
+t:gender:Пол:GND0001
+f:Name:$:Пол:key
+end:
+
+t:education:Образование:EDU0001
+f:Name:$:Образование:key
+end:
+
+
+
+t:wasspouce:Был в браке:SPC001
+f:Name:$:Был в браке:key
+end:
+
+
+
+
+
+t:keila:Община:K0001
+f:Name:$:Наименование:key
+f:city:$:Город
+f:whorecomend:$:Кто рекомендовал (Рав)
+end:
+
+
+t:isfrozen:Анкета закрыта:ISCL001
+f:Name:$:Анкета закрыта:key
+end:
+
+
+t:health:Уровень здоровья:HEALTH001
+f:Name:$:Уровень:key
+end:
+
+
+t:iskoen:Коэн:ISKOEN001
+f:Name:$:Коэн:key
+end:
+
+
+
+t:beaty:Внешние данные:BEAT001
+f:Name:$:Внешние данные:key
+end:
+
+t:defaultPhoto:Фото по умолчанию:DEFPH001
+f:Name:$:Номер фото по умолчанию:key
+end:
+
+
+t:business:Род занятий:BUSI001
+f:Name:$:Род занятий:key
+end:
+
+
+t:family:сведения о семье:FAM001
+f:Name:$:Семья:key
+end:
+
+
+
+t:jewery:Еврейство:JEW001
+f:Name:$:Еврейство:key
+end:
+
+
+t:eida:Какой традиции придерживаетесь:EIDA001
+f:Name:$:Какой традиции придерживаетесь:key
+end:
+
+t:iskashrut:Соблюдение кашрута:KSHRT001
+f:Name:$:Соблюдение кашрута:key
+end:
+
+t:ismitzvot:Соблюдение мицвот:MTZVT001
+f:Name:$:Соблюдение мицвот:key
+end:
+
+t:isshabos:Соблюдение шаббата:SHBT001
+f:Name:$:Соблюдение шаббата:key
+end:
+
+
+t:valuta:Валюта:VLT001
+f:Name:$:Наименование
+end:
+
+
+
+; Тарифы
+t:tarif:Тарифы:TARF001
+
+;наименование
+f:Name:$:Наименование
+
+;стоимость тарифа
+f:Stoim:$:Стоимость тарифа
+
+;валюта тарифа
+fk:valuta
+
+;;;;скидка процентов
+;;;;итоговоая стоимость после скидки
+
+end:
+
+
+; история платежей
+t:payment:История платежей пользователей:PAY001
+;код услуги
+fk:tarif
+
+;дата платежа
+f:datepay:$:Дата платежа
+
+;начало периода
+f:datbeg:$:Дата запроса
+;окончание периода
+f:datend:$:Дата запроса
+
+
+
+
+;статус платежа 
+;активен / неактивен
+f:status:$:Статус платежа
+
+
+f:datezapros:$:Дата запроса
+
+;сумма платежа
+f:summa:$:Сумма платежа
+;валюта платежа
+fk:valuta
+end:
+
+
+
+t:account:Анкета:A001
+; U001 - имя формы
+; f - поле
+
+
+
+
+f:Surname:$:Фамилия:key
+f:Name:$:Имя
+f:MiddleName:$:Отчество
+
+
+f:Photo1:Image:Фото
+f:Photo2:Image:Фото
+f:Photo3:Image:Фото
+fk:defaultPhoto
+f:MySocial:$:ссылка на соцсеть
+
+f:city:$:Город
+f:country:$:Страна
+f:area:$:Район проживания
+;$:Род занятий
+fk:business
+; сведения о семье
+fk:family
+
+fk:gender
+f:Birthday:$:Год рождения:KEY
+fk:wasspouce
+
+f:Children:$:Количество детей
+f:AboutMe:$160:Опишите себя
+f:AboutZug:$160:Опишите кандидата
+
+f:motherlang:$:Родной язык
+f:languages:$:Знание языков
+; Образование
+fk:education
+
+
+f:Phone:$:Номер телефона:KEY
+
+f:EMail:$:E-Mail
+f:Skype:$:Skype
+
+;Внешние данные
+fk:beaty
+;:$:Внешние данные
+
+
+
+
+; Какой рав рекомендует
+f:whorecomend:$:Рекомендация
+
+;Еврейство
+; коен
+;левит
+;по галахе
+;гер
+;по маме
+;по папе
+fk:jewery
+f:Height:$:Рост
+f:Weight:$:Вес
+
+;Уровень  здоровья
+fk:health
+
+
+;Коэн
+;fk:iskoen
+
+;Из какой общины
+; литовская / дати леуми / хабад/ бреслав /
+fk:keila
+
+fk:isshabos
+;:$:Соблюдение шаббата
+
+;Соблюдение мицвот
+fk:ismitzvot
+
+;Соблюдение кашрута
+fk:iskashrut
+
+;Какой традиции придерживаетесь
+; нусах - ашкеназ / сфарад / сфаради/ горский / бухарский
+fk:eida
+
+f:login:$:Аккаунт 
+f:password:$260:Пароль
+f:status:$:Approved
+f:token:$:Token
+;f:BalanceType:$:Тип баланса
+f:Balance:$:Баланс
+
+f:DateRegist:$:Дата регистрации
+f:DateLogin:$:Дата последнего входа
+;Аккаунт временно отключен/закрыт/заморожен или просто удален пользователем
+fk:isfrozen
+
+
+end:
+
+
+t:reqtstatus:Статус запроса:REQSTS001
+f:Name:$:Наименование
+end:
+
+
+t:request:История запросов пользователей:HIST001
+fk:account:account1:(Surname + " "+Name) as Surname
+fk:account:account2:(Surname + " "+Name) as Surname
+f:datezapros:$:Дата запроса
+
+; ожидает / принят / активен / отклонен / шидух / завершен
+fk:reqtstatus
+end:
+
+
+

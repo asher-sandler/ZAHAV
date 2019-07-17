@@ -1,0 +1,86 @@
+﻿@ this is a comments
+@ pdoClass.TMPL for generatin powershell script
+@ that will be generate php for model
+<<function render-module($dpPasspTable)>>
+<<{>>
+	<<$crlf = [char][int]13+[char][int]10>>
+
+<?php
+//
+// Generated <<%%$($(get-date).getdatetimeformats()[21])%%>>
+// Template name "pdoClass.TMPL"
+//
+class <<%%(Get-Culture).TextInfo.ToTitleCase($dpPasspTable.TableName)%%>>PDO 
+{    
+
+	// table
+	protected $table
+	//
+	public function getTableName(){
+		return "<<%%$dpPasspTable.TableName%%>>";	
+	}
+	//
+	<<foreach($f in $dpPasspTable.Fields){>>
+	/*
+	*
+	*	$<<%%$f.Name%%>>;
+	*
+	*/
+	protected $<<%%$f.Name%%>>;
+	//
+	public function get<<%%$f.Name%%>>() {
+		return $this-><<%%$f.Name%%>>;
+	}
+	<<}>>
+	
+	function __construct()
+    {
+        $this->table = getTableName();
+    }
+
+
+	protected 	<<%%$dpPasspTable.TableName%%>>Array;
+	
+	function update($values = array(),$id,
+	<<foreach($f in $dpPasspTable.Fields){>>
+		$<<%%$f.Name%%>>,
+	<<}>>
+	@ delete 3 last symbol in string , and $crlf			
+	<<$script = $script.Substring(0,$script.Length-3)>>
+
+	)
+	{
+		foreach ($values as $field => $value ){
+			$ins[] = ':' . $field;
+		}
+		$ins = implode(',', $ins);
+		$fields = implode(',', array_keys($values));
+		$sql = "INSERT INTO $this->table ($fields) VALUES ($ins)";
+		
+		$sth=$Db->Prepare($sql);
+		
+		foreach ($values as $field => $value )
+        {
+            $sth->bindValue(':' . $field, $value);
+        }
+		
+		$sth->execute();
+	}
+	
+	public function getPrepArr($data)
+	{
+	
+		$values = array();
+	<<foreach($f in $dpPasspTable.Fields){>>
+		if (isset($data['<<%%$f.Name%%>>-<<%%$dpPasspTable.FormName%%>>'])){
+			$values += ['<<%%$f.Name%%>>' => $data['<<%%$f.Name%%>>-<<%%$dpPasspTable.FormName%%>>']];	
+		}
+	<<}>>
+		return $values;
+	}
+	
+	
+}
+	<<return $script>>
+
+<<}>>

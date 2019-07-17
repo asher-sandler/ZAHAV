@@ -1,0 +1,21 @@
+﻿@ this is a comments
+@ menu.TMPL for generatin powershell script
+@ that will be generate php for delete.html
+<<function render-module($dpPassp)>>
+<<{>>
+	<<$crlf = [char][int]13+[char][int]10>>
+
+<?php
+
+	<<foreach ($table in $dpPassp.Tables){>>
+
+Config::push('menu-sprav','<<%%$table.TableName%%>>;<<%%$table.DisplayName%%>>');
+
+	<<}>>
+
+
+
+	<<return $script>>
+
+<<}>>
+

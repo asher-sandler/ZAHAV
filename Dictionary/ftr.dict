@@ -1,0 +1,25 @@
+t:country:Country:CTR001
+f:Name:$:Country Name
+
+end:
+;================================
+
+t:manufactur:Manufacture:MFR001
+f:Name:$:Manuf. Name
+fk:country
+
+end:
+
+
+;================================
+t:goods:Goods:GDS001
+
+f:name:$:Good Name
+f:photo:Image:Good Photo  
+fk:manufactur
+f:price:$5:Price
+f:onstock:$5:Count on Stock
+  
+
+end:
+

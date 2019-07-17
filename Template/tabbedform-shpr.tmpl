@@ -1,0 +1,402 @@
+﻿@ this is a comments
+@ tabbedform.TMPL for generatin powershell script
+@ that will be generate js for screen form
+@ usage  -   .\PS-gen.ps1 -TemplateName js1
+@ generate ps script on this template
+@ variables
+@ %%params%%
+@ %%  - add leadinig and trailing plus
+@ % - nothing to add
+@ %%FormName%%
+<<function create-tab($Action,$dict, $table)>>
+<<{>>
+	<<$crlf = [char][int]13+[char][int]10>>
+	
+	
+	<<$formAction = "">>
+	<<switch ($Action.ToUpper())>>
+	<<{>>
+	<<	'ADD'  { $formAction= "Добавление"; $enctype='enctype="multipart/form-data"'}>>
+	<<	'EDIT' { $formAction= "Редактирование" ;  $enctype='enctype="multipart/form-data"'}>>
+	<<	'SHOW' { $formAction= "Просмотр"}>>
+	<<}>>
+    <<$script="">>
+@
+
+	<<$ojsonFileName =  "..\gen\"+$dict+"\forms\json\"+$table+".json">>
+	<<$ctx=get-content $ojsonFileName>>
+
+	<<$formo = $ctx | ConvertFrom-Json>>
+	<<$isImage = isTypeImageInForm($formo)>>
+	<<if (($Action.ToUpper() -eq 'ADD') -or ($Action.ToUpper() -eq 'EDIT')){>>
+	<<if ($isImage){>>
+@		<<write-host Image-Found>>
+<script type="text/javascript" src="/public/scripts/uP.js"></script>
+
+<style type="text/css">
+
+		<<$imgflds =  ImageFields($formo)>>
+		<<foreach($imgfld in $imgflds){>>
+		    <<$cssfld =  $imgfld+"-"+$formo.FormName>>
+#<<%%$cssfld%%>> {
+  width: 200px;
+  height: 200px;
+  position: relative;
+  overflow: hidden;
+  background-color: #ffffff;
+  color: #ecf0f1;
+}
+#<<%%$cssfld%%>> input {
+  line-height: 200px;
+  font-size: 200px;
+  position: absolute;
+  opacity: 0;
+  z-index: 10;
+}
+#<<%%$cssfld%%>> label {
+  position: absolute;
+  z-index: 5;
+  opacity: 0.8;
+  cursor: pointer;
+  background-color: #bdc3c7;
+  width: 200px;
+  height: 50px;
+  font-size: 20px;
+  line-height: 50px;
+  text-transform: uppercase;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: auto;
+  text-align: center;
+}
+
+			
+
+		<<}>>
+</style>
+	<<}>>
+	<<}>>
+	<<$hiddenFormID=get-hidden-formID($formo)>>
+@	<<#$r = $formo |ConvertTo-Json -Depth 100>>
+@	<<#write-host $r>>
+@	<<#read-host>>
+
+<h1 class="text-center text-capitalize"><<%%$formo.Description%%>>:<<%%$formAction%%>></h1>
+
+<div class="col-m-1 ">
+    <ul class="nav nav-tabs nav-justified " id="myTab" role="tablist" >
+	       
+		   
+		   <<$i=1>>
+		   <<foreach($tab in $formo.tabs){>>	
+		   
+		   
+			<li class="nav-item nav-link tabbed-<<%%$i.tostring()%%>>" >
+				<a href="#tab-id-<<%%$i.tostring()%%>>" data-toggle="tab"><<%%$tab.Name%%>></a>
+			</li>
+			
+			<<$i++>>
+			<<}>>
+		
+	</ul>
+
+   <form class="needs-validation " novalidate action="/<<%%$formo.Name%%>>/update" method="post" <<%%$enctype%%>>>
+
+		<<if (($action.ToUpper() -eq "ADD") ){>>
+			<input type="hidden"  id="<<%%$hiddenFormID%%>>" name="<<%%$hiddenFormID%%>>" value="-1"/>
+		<<}else{>>
+			<<$fid = 'id'>>
+			<<$idvalue     = 'value="<?php echo($data['+"'"+$formo.Name+"'][0]["+'"'+$fid+'"])'+'?>"'>>
+		    
+			<input type="hidden"  id="<<%%$hiddenFormID%%>>" name="<<%%$hiddenFormID%%>>" <<%%$idvalue%%>>/>
+		
+		<<}>>
+
+		<div class="tab-content ">
+
+           
+		   <<$i=$formo.tabs.count>>
+		   <<while($i -ge 1){>>	
+			   
+		   <<$tabactive="">>
+		   <<if ($i -eq 1){>>
+				<<$tabactive=" active">>
+		   <<}>>
+		   <div class="tab-pane form-yaffe tab-form-<<%%$i.tostring()%%>> <<%%$tabactive%%>>" id="tab-id-<<%%$i.tostring()%%>>" >
+
+				
+				
+                <H1 class="text-center text-info"><<%%$formo.tabs[$i-1].Name%%>></H1>
+				
+				<<$formRow=1>>
+				<<$fieldCount = 1>>
+                <div class="form-row ">
+                    
+				<<foreach($field in $formo.tabs[$i-1].Fields){>>
+				<<$json = $field.json |ConvertFrom-Json>>
+				
+@				<<write-host $formRow>>
+@				<<write-host $script>>
+@				<<read-host >>
+
+				<<if(($formRow -gt 2) ){>>
+				</div>
+				<div class="form-row ">	
+					<<$formRow=1>>
+					<<}>>
+
+					
+	
+					<div class="col-md-6 mb-3">
+						<<$fieldid =$field.Name+"-"+$formo.FormName>> 	
+						<label for="<<%%$fieldid%%>>">
+									<<%%$field.Label%%>>
+						</label>
+						<<$txtReq = "">>
+						  
+@						<<if ($field.Name.ToUpper() -eq "PHOTO"){>>
+@							<<$txttype = "file">>
+@						<<}else{>>
+						   <<$txttype = "text">>
+@						<<}>>
+						  
+						  
+@						<<$classtype = 'class="form-control w3-btn" '>>
+						<<$classtype = 'class="form-control" '>>
+						<<$value     = "">>
+						<<$value     = 'value="<?php echo($data['+"'"+$formo.Name+"'][0]["+'"'+$field.Name+'"])'+'?>"'>>
+						<<$isRequired = $field.isReq>>
+						<<if (!$field.isConstraint){>>
+						  <<if ($action.ToUpper() -eq "ADD")>>
+						  <<{>>
+							
+							<<$value     = "">>
+							<<if ($field.isReq){>>
+								<<$txtReq = " required">>
+							<<}>>
+							
+						  <<}>>
+						  <<elseif ($action.ToUpper() -eq "SHOW")>>
+						  <<{>>
+							<<$isRequired = $false>>
+							<<$classtype = 'class="form-control" readonly '>>
+							
+						  <<}>>
+						  <<elseif ($action.ToUpper() -eq "EDIT")>>
+						  <<{>>
+							<<$classtype = 'class="form-control" '>>
+							<<if ($field.isReq){>>
+								<<$txtReq = " required">>
+							<<}>>
+						  <<}>>
+						  <<else>>
+						  <<{>>
+						  
+						  <<}>>
+							<<if ($action.ToUpper() -eq "SHOW"){>>
+								<<if ($json.Type.ToUpper() -eq "IMAGE"){>>
+																
+							<?php
+							<<$vr = '$data['+"'"+$formo.Name+"'][0]['"+$field.Name+"']">>
+							$imageURL = "/public".str_replace(chr(92),'/',<<%%$vr%%>>);
+							?>
+							<img src="<?php echo $imageURL; ?>" alt="<?php echo(<<%%$vr%%>>); ?>" style="width:200px">
+
+								<<}else{>>
+@								<<$value     = '<?php echo($data['+"'"+$formo.Name+"'][0]["+'"'+$field.Name+'"])'+'?>'>>
+
+@								<button type="button" class="btn btn-default" id="<<%%$fieldid%%>>" name="<<%%$fieldid%%>>" ><<%%$value%%>></button>		
+									<input type="<<%%$txttype%%>>" <<%%$classtype%%>> id="<<%%$fieldid%%>>" name="<<%%$fieldid%%>>" placeholder="<<%%$field.Label%%>>" <<%%$txtReq%%>> <<%%$value%%>> >							
+
+								<<}>>
+							<<}else{>>
+								<<if ($json.Type.ToUpper() -eq "IMAGE"){>>
+									<<if ($Action.ToUpper() -eq 'ADD'){>>
+
+									<<write-host $json.Type>>
+										<div id="<<%%$fieldid%%>>">
+											<label for="<<%%$fieldid%%>>" id="<<%%$fieldid%%>>-label">Фото</label>
+											<input type="file" id="<<%%$fieldid%%>>-image" name="<<%%$fieldid%%>>" />
+										</div>									
+									<<}elseif ($Action.ToUpper() -eq 'EDIT'){>>
+@							<?php
+										<<$vr = '$data['+"'"+$formo.Name+"'][0]['"+$field.Name+"']">>
+@							$imageURL = "/public".str_replace(chr(92),'/',<<%%$vr%%>>);
+@							?>
+@							<div id="<<%%$fieldid%%>>" style="background-image: url(<?php echo($imageURL);?>); background-size: cover; background-position: 50% 50%;">
+@								<label for="<<%%$fieldid%%>>" id="<<%%$fieldid%%>>-label">Сменить фото</label>
+@								<input type="file" id="<<%%$fieldid%%>>-image" name="<<%%$fieldid%%>>" />
+@							</div>
+							<div id="<<%%$fieldid%%>>" style="<?php echo(<<%%$vr%%>>);?>">
+								<label for="<<%%$fieldid%%>>" id="<<%%$fieldid%%>>-label">Сменить фото</label>
+								<input type="file" id="<<%%$fieldid%%>>-image" name="<<%%$fieldid%%>>" />
+							</div>
+
+	
+										<<}>>
+								<<}else{>>
+
+								  <input type="<<%%$txttype%%>>" <<%%$classtype%%>> id="<<%%$fieldid%%>>" name="<<%%$fieldid%%>>" placeholder="<<%%$field.Label%%>>" <<%%$txtReq%%>> <<%%$value%%>> >
+								  <<if ($isRequired ){>>
+								  <div class="invalid-feedback">
+									   Заполните поле: "<<%%$field.Label%%>>".
+								  </div>
+								  <div class="valid-feedback">
+									   ✔
+		@							   ☺ Ok ☻ ☑ √ ✔ ✵   
+								  </div>
+								<<}>>
+							<<}>>
+							
+						  <<}>>	
+						<<}else{>>
+							<<$fieldid =$json.Name+"-"+$formo.FormName>>
+							<<$fieldtype=$json.Type>>
+								
+
+							<<if ($Action.ToUpper() -eq "ADD"){>>
+								<select <<%%$classtype%%>>  id="<<%%$fieldid%%>>" name="<<%%$fieldid%%>>" placeholder="<<%%$field.Label%%>>" >
+								<?php foreach($data['<<%%$json.Constraint.ParentTable%%>>'] as $row){
+									
+									echo('<option value="'.$row["<<%%$json.Constraint.ParentField%%>>"].'">'.$row["<<%%$json.Constraint.View%%>>"]."</option>");
+								}?>	
+								</select>
+							<<}elseif ($Action.ToUpper() -eq "SHOW"){>>
+@   show constraint		
+@							<<$classtype = 'class="form-control-plaintext" '>>
+							<input type="<<%%$txttype%%>>" readonly <<%%$classtype%%>> id="<<%%$fieldid%%>>" name="<<%%$fieldid%%>>" placeholder="<<%%$field.Label%%>>" <<%%$txtReq%%>> <<%%$value%%>> >
+@							<<$value     = '<?php echo($data['+"'"+$formo.Name+"'][0]["+'"'+$field.Name+'"])'+'?>'>>
+
+@							<h3><span class="label label-info"><<%%$value%%>></span></h3>
+@							<button type="button" class="btn btn-default" id="<<%%$fieldid%%>>" name="<<%%$fieldid%%>>" ><<%%$value%%>></button>		
+
+							<<}elseif ($Action.ToUpper() -eq "EDIT"){>>
+							
+								<select <<%%$classtype%%>>  id="<<%%$fieldid%%>>" name="<<%%$fieldid%%>>" placeholder="<<%%$field.Label%%>>" >
+
+								<?php foreach($data['<<%%$json.Constraint.ParentTable%%>>'] as $row){
+
+									if ($row["<<%%$json.Constraint.ParentField%%>>"] == $data['<<%%$formo.Name%%>>'][0]['<<%%$field.Value%%>>']){
+										$selectd = "selected";
+
+									}
+									else
+									{
+										$selectd = "";
+@										echo('<option value="'.$row["<<%%$json.Constraint.ParentField%%>>"].'">'.$row["<<%%$json.Constraint.View%%>>"]."</option>");
+									}	
+									echo('<option value="'.$row["<<%%$json.Constraint.ParentField%%>>"].'" '.$selectd.'>'.$row["<<%%$json.Constraint.View%%>>"]."</option>");
+
+								}?>
+								</select>
+							
+							<<}>>
+						<<}>>
+					</div>
+					<<$formRow++>>
+					<<$fieldCount++>>
+				<<}>>
+				</div>	
+
+
+
+            </div>
+			
+			<<$i-->>
+			<<}>>	
+
+		<div class="btn-toolbar" style="justify-content: center; display:flex;">
+				<div class="btn-group   mr-5" >
+					<a href="/" class="w3-btn w3-white w3-border w3-border-red w3-round-large" style="text-decoration:none;">Закрыть</a>
+@   comments		<input  class="w3-btn w3-white w3-border w3-border-red w3-round-large" name="btnclose" type="button" onclick="windows.location.href='/<<%%$formo.Name%%>>/';" value="Закрыть"/>
+@   comments		<button class="w3-btn w3-white w3-border w3-border-red w3-round-large" name="btnclose" type="submit" formaction="/<<%%$formo.Name%%>>/">Закрыть</button>
+				
+				</div>
+			<<if (($action.ToUpper() -eq "ADD") -or ($action.ToUpper() -eq "EDIT")){>>
+				<div class="btn-group   mr-5" >
+					<button class="w3-btn w3-khaki w3-border w3-border-red w3-round-large" name="btnsave" type="submit" >Записать</button>
+				
+				</div>
+			<<}>>
+			<<if ($action.ToUpper() -eq "SHOW"){>>
+				<div class="btn-group   mr-5" >	
+					<button class="w3-btn w3-khaki w3-border w3-border-red w3-round-large" name="btnedit" type="submit" formaction="/<<%%$formo.Name%%>>/edit">Изменить</button>		
+				</div>				
+				
+				<div class="btn-group   mr-5" >	
+					<button class="w3-btn w3-pink w3-border w3-border-red w3-round-large" name="btndelete" type="submit" formaction="/<<%%$formo.Name%%>>/confirmdel">Удалить</button>		
+				</div>
+			<<}>>
+			</div>
+			
+		</div>		
+			
+			
+		
+
+    </form>
+</div>
+
+
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    $(function () {
+        $('.tab-pane input, .tab-pane textarea').on('invalid',
+            function () {
+                var $closest = $(this).closest('.tab-pane');
+                //var $closest=$(this).last('.tab-pane');
+
+                var id = $closest.attr('id');
+
+                $('.nav a[href="#' + id + '"]').tab('show');
+            });
+    });
+</script>
+<<if (($Action.ToUpper() -eq 'ADD') -or ($Action.ToUpper() -eq 'EDIT')){>>
+
+	<<if ($isImage){>>
+
+<script type="text/javascript">
+
+		<<$imgflds =  ImageFields($formo)>>
+		<<foreach($imgfld in $imgflds){>>
+		    <<$cssfld =  $imgfld+"-"+$formo.FormName>>
+$(document).ready(function() {
+  $.uploadPreview({
+    input_field: "#<<%%$cssfld%%>>-image",   // Default: .image-upload
+    preview_box: "#<<%%$cssfld%%>>",  // Default: .image-preview
+    label_field: "#<<%%$cssfld%%>>-label",    // Default: .image-label
+    label_default: "Выбрать фото",   // Default: Choose File
+    label_selected: "Сменить фото",  // Default: Change File
+    no_label: false                 // Default: false
+  });
+});
+
+		<<}>>
+</script>
+	<<}>>
+<<}>>
+
+	<<return $script>>
+
+<<}>>
+

@@ -1,0 +1,13 @@
+﻿.\gen-render.ps1 -class "model" -moduleFileName "..\gen\USERS\render\goods-model.ps1" -Object "PassportTable" -Dictionary "USERS"
+.\gen-render.ps1 -class "pdo" -moduleFileName "..\gen\USERS\render\goods-pdo.ps1" -Object "PassportTable" -Dictionary "USERS"
+.\gen-render.ps1 -class "controller" -moduleFileName "..\gen\USERS\render\goods-controller.ps1" -Object "PassportTable" -Dictionary "USERS"
+.\gen-render.ps1 -class "index" -moduleFileName "..\gen\USERS\render\goods-index.ps1" -Object "GRID" -Dictionary "USERS"
+.\gen-render.ps1 -class "index" -moduleFileName "..\gen\USERS\render\goods-update.ps1" -Object "GRID" -Dictionary "USERS"
+.\gen-render.ps1 -class "index" -moduleFileName "..\gen\USERS\render\goods-confirmdel.ps1" -Object "GRID" -Dictionary "USERS"
+.\gen-render.ps1 -class "html" -moduleFileName "..\gen\USERS\render\goods-delete.ps1" -Object "PassportTable" -Dictionary "USERS"
+.\gen-render.ps1 -class "form" -moduleFileName "..\gen\USERS\render\goods-add.ps1" -Object "goods" -Dictionary "USERS"
+.\gen-render.ps1 -class "form" -moduleFileName "..\gen\USERS\render\goods-show.ps1" -Object "goods" -Dictionary "USERS"
+.\gen-render.ps1 -class "form" -moduleFileName "..\gen\USERS\render\goods-edit.ps1" -Object "goods" -Dictionary "USERS"
+.\gen-render.ps1 -class "shapr" -moduleFileName "..\gen\USERS\render\goods-edit-shpr.ps1" -Object "goods" -Dictionary "USERS"
+.\gen-render.ps1 -class "menu" -moduleFileName "..\gen\USERS\render\menu-menu.ps1" -Object "PassportTable" -Dictionary "USERS"
+

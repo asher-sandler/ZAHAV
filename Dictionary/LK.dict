@@ -1,0 +1,11 @@
+
+t:anketa:Личный кабинет:LK001
+f:Surname:$:Фамилия:key
+f:Name:$:Имя
+f:MiddleName:$:Отчество
+f:Account:$:Аккаунт 
+f:Phone:$:Номер телефона:KEY
+f:EMail:$:E-Mail
+f:Skype:$:Skype
+end:
+

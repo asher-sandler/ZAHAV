@@ -1,0 +1,7 @@
+t:images:Хранилище изображений:I001
+
+f:file_name:$:Имя файла:key 
+f:uploaded_on:$:Дата сохранения:key  
+f:status:$:Статус  
+end:
+

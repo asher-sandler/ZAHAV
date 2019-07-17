@@ -1,0 +1,22 @@
+﻿@ this is a comments
+@ delete.TMPL for generatin powershell script
+@ that will be generate php for delete.html
+<<function render-module($dpPasspTable)>>
+<<{>>
+	<<$crlf = [char][int]13+[char][int]10>>
+
+   <form action="/<?=Config::get('site_root')?><<%%$dpPasspTable.TableName.ToLower()%%>>" method="post">
+        <div class="row-md-8">
+            <button class="btn btn-success" type="submit">Ok</button>
+
+        </div>
+        <br/>
+
+
+    </form>
+
+
+	<<return $script>>
+
+<<}>>
+

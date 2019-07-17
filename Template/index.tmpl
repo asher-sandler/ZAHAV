@@ -1,0 +1,64 @@
+﻿@ this is a comments
+@ index.TMPL for generatin powershell script
+@ that will be generate php for index.html
+<<function render-module($dictName,$tableName)>>
+<<{>>
+	<<$crlf = [char][int]13+[char][int]10>>
+	<<$dpPasspTable = gridGetObj $dictName $tableName>>
+	<<$fieldscount=$dpPasspTable.Fields.count>>
+	<<$percnt = [math]::Round((90/$fieldscount))>>
+	<<$ostpercnt = 100-($($fieldscount)*$percnt)>>
+	<div id="<<%%$dpPasspTable.ViewName%%>>">
+	        <table class="table table-bordered table-striped table-hover" id="<<%%$TableName.ToLower()%%>>-table">
+
+					<tr>
+					
+					<<foreach($f in $dpPasspTable.Fields){>>
+		       		     <th width="<<%%$percnt.ToString()%%>>%"><<%%$f.Label%%>></th>
+					<<}>>	 
+					
+						<th width="<<%%$ostpercnt.ToString()%%>>%">
+							<form action="/<?=Config::get('site_root')?><<%%$TableName.ToLower()%%>>/add" method="post">
+								<button class="btn btn-warning btn-md" type="submit"   >Добавить</button>
+							</form>
+						</th>
+					</tr>
+					
+					
+					<?php foreach($data['<<%%$TableName.ToLower()%%>>'] as $row) {?>
+					<tr>
+						<<foreach($f in $dpPasspTable.Fields){>>
+							<<$json = $f.json |ConvertFrom-Json>>
+							<<$fieldName = $f.Name>>
+						<<if ($json.Type.ToUpper() -eq "IMAGE"){>>
+						<td width="<<%%$percnt.ToString()%%>>%">
+
+							<div style="<?php echo $row['<<%%$fieldName%%>>']; ?>width:70px;height:70px;"></div>
+							</div>
+
+						</td>
+
+@						<?php
+@						$imageURL = "/".Config::get('site_root').str_replace(chr(92),'/',$row['<<%%$fieldName%%>>']);
+@						?>
+@						<td width="<<%%$percnt.ToString()%%>>%"><img src="<?php echo $imageURL; ?>" alt="<?php echo $row['<<%%$fieldName%%>>']; ?>" style="width:50px"></td>
+						<<}else{>>							
+							
+							
+						<td width="<<%%$percnt.ToString()%%>>%"><?php echo $row['<<%%$fieldName%%>>']; ?></td>
+						<<}>> 
+						<<}>> 
+						<td width="<<%%$ostpercnt.ToString()%%>>%">
+							<form action="/<?=Config::get('site_root')?><<%%$TableName.ToLower()%%>>/show/<?=$row["id"]?>" method="post">
+								<button class="btn btn-info btn-md" type="submit" >Открыть</button>
+							</form>
+						</td>
+					</tr>
+					<?php } ?>
+
+	        </table>
+	</div>
+	<<return $script>>
+
+<<}>>
+
